@@ -16,6 +16,13 @@ const TableOrderCtrl = (function() {
         const j = Math.floor(Math.random() * (i + 1));
         [names[i], names[j]] = [names[j], names[i]];
       }
+    }, removeName(name) {
+      console.log(`removing ${name}`)
+      const index = names.indexOf(name);
+      if (index >= 0) {
+        names.splice(index, 1);
+      }
+      console.log(names);
     }
   }
 
@@ -36,12 +43,12 @@ const UICtrl = (function() {
     displayTableOrder: function() {
       const tableOrderList = document.querySelector(uiSelectors.tableOrderList);
       tableOrderList.innerHTML = '';
-      
+
       const names = TableOrderCtrl.getNames();
       names.forEach(function(name) {
         const li = document.createElement("li");
-        li.className = "list-group-item list-group-item-secondary";
-        li.innerHTML = name;
+        li.className = "list-group-item list-group-item-secondary d-flex justify-content-between align-items-center";
+        li.innerHTML = `${name} <a class = "btn btn-secondary btn-sm" id="remove-${name}" href="#"><i class="edit-item las la-times"></i></a>`;
         document.querySelector(uiSelectors.tableOrderList).insertAdjacentElement('beforeend', li);
       });
     },
@@ -70,10 +77,15 @@ const App = (function() {
     UICtrl.displayTableOrder();
   }
 
+  const removeUser = function(name) {
+    TableOrderCtrl.removeName(name);
+    UICtrl.displayTableOrder();
+  }
+
   return {
     init: function() {
-      loadEventListeners();
       UICtrl.displayTableOrder();
+      loadEventListeners();
     }
   }
 
