@@ -5,7 +5,20 @@
 const TableOrderCtrl = (function() {
 
   // TODO remove hard coded names
-  const names = ["Dorian", "Tai", "Falgar", "Sullivan", "Xander"];
+
+  const getNameData = function() {
+    if (localStorage.getItem('table-order-names') === null) {
+      return [];
+    } else {
+      return JSON.parse(localStorage.getItem('table-order-names'));
+    }
+  }
+
+  const updateLocalStorage = function() {
+    localStorage.setItem("table-order-names", JSON.stringify(names));
+  }
+
+  let names = getNameData();
 
   return {
     getNames: function() {
@@ -16,15 +29,19 @@ const TableOrderCtrl = (function() {
         const j = Math.floor(Math.random() * (i + 1));
         [names[i], names[j]] = [names[j], names[i]];
       }
+      updateLocalStorage();
     }, 
     removeName(name) {
       const index = names.indexOf(name);
       if (index >= 0) {
         names.splice(index, 1);
       }
+      updateLocalStorage();
     },
     addMember(name) {
+      names = getNameData();
       names.push(name);
+      updateLocalStorage();
     }
   }
 
@@ -45,6 +62,7 @@ const UICtrl = (function() {
 
   return {
     displayTableOrder: function() {
+      document.querySelector(uiSelectors.addMember).value = '';
       const tableOrderList = document.querySelector(uiSelectors.tableOrderList);
       tableOrderList.innerHTML = '';
 
