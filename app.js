@@ -53,10 +53,7 @@ const NumberGuesserCtrl = (function() {
 
 
   let min = localStorage.getItem("min");
-  let max = localStorage.getItem("max");
-
-  console.log(min, max);
-  
+  let max = localStorage.getItem("max");  
   
   return {
     getMin: function() {
@@ -70,6 +67,21 @@ const NumberGuesserCtrl = (function() {
       max = newMax;
       localStorage.setItem("min", min);
       localStorage.setItem("max", max);
+    },
+    chooseWinner: function(guesses) {
+      console.log(min, max);
+      const winningNumber = Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1) ) + min;
+      console.log(winningNumber);
+      let winner;
+      guesses.forEach(function(guess) {
+        const diff = Math.abs(winningNumber - guess.guess);
+        if (winner === undefined || winner.diff > diff) {
+          winner = {"name": guess.name, "guess": guess.guess, "diff": diff}
+        }
+      });
+
+      return {"winner": winner, "winningNumber": winningNumber};
+
     }
   }
 
@@ -89,6 +101,7 @@ const UICtrl = (function() {
     minMaxText: "#min-and-max-text",
     guessSuccess: "#guess-success",
     guessError: "#guess-error",
+    guessSuccess: "#guess-success",
     numberGuesserList: "#number-guess-list",
     guessBtn: "#guess-btn",
     minMaxBtn: "#max-min-btn",
@@ -128,6 +141,12 @@ const UICtrl = (function() {
       }
 
     },
+    displayWinner: function(winner) {
+      const message = `<p>The winning number was ${winner.winningNumber}! ${winner.winner.name} is the winner with a guess of ${winner.winner.guess}</p>`;
+      const success = document.querySelector(uiSelectors.guessSuccess);
+      success.innerHTML = message;
+      success.style.display = "block";
+    },
     displayNumberGuesser: function() {
 
       const guessBtn = document.querySelector(uiSelectors.guessBtn);
@@ -138,7 +157,6 @@ const UICtrl = (function() {
 
       if (!min || !max) {
         minMaxText.innerHTML = '';
-        console.log(guessBtn);
         guessBtn.style.display = 'none';
       } else {
         minMaxText.innerHTML = `Please select a number between <strong>${min}</strong> and <strong>${max}</strong>`
@@ -185,6 +203,40 @@ const UICtrl = (function() {
         }
       }
     },
+    getGuessInput: function() {
+      const guesses = [];
+      let errors;
+
+      TableOrderCtrl.getNames().forEach(function(name) {
+        const guessElement = document.querySelector(`#guess-${name}`);
+
+        if (guessElement != null) {
+          const guessText = guessElement.value;
+          const guess = parseInt(guessText);
+          if (!isNaN(guess)) {
+            if (guess > NumberGuesserCtrl.getMax() || guess < NumberGuesserCtrl.getMin()) {
+              let message = `<p>${name}'s guess of ${guess} is out of range</p>`;
+              if (errors) {
+                errors += message;
+              } else {
+                errors = message;
+              }
+            } 
+            
+            if(!errors) {
+              guesses.push({"name": name, "guess": guess})
+            }
+
+          }       
+        } 
+      });
+
+      if (errors) {
+        showGuessError(errors);
+      } else {
+        return guesses;
+      }
+    },
     getUISelectors: function() {
       return uiSelectors;
     }
@@ -205,6 +257,7 @@ const App = (function() {
     document.querySelector(UICtrl.getUISelectors().tableOrderList).addEventListener("click", removeUser);
     document.querySelector(UICtrl.getUISelectors().addMemberBtn).addEventListener("click", addMember);
     document.querySelector(UICtrl.getUISelectors().minMaxBtn).addEventListener("click", selectMinAndMax);
+    document.querySelector(UICtrl.getUISelectors().guessBtn).addEventListener("click", submitGuesses);
 
   }
 
@@ -241,6 +294,15 @@ const App = (function() {
     TableOrderCtrl.addMember(member);
     UICtrl.displayTableOrder();
     UICtrl.displayNumberGuesser();
+  }
+
+  const submitGuesses = function() {
+    const guesses = UICtrl.getGuessInput();
+
+    if(guesses) {
+      const winner = NumberGuesserCtrl.chooseWinner(guesses);
+      UICtrl.displayWinner(winner);
+    }
   }
 
   return {
