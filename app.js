@@ -16,11 +16,15 @@ const TableOrderCtrl = (function() {
         const j = Math.floor(Math.random() * (i + 1));
         [names[i], names[j]] = [names[j], names[i]];
       }
-    }, removeName(name) {
+    }, 
+    removeName(name) {
       const index = names.indexOf(name);
       if (index >= 0) {
         names.splice(index, 1);
       }
+    },
+    addMember(name) {
+      names.push(name);
     }
   }
 
@@ -34,7 +38,9 @@ const UICtrl = (function() {
 
   const uiSelectors = {
     randomizeBtn : "#randomize-button",
-    tableOrderList : "#table-order-list"
+    tableOrderList : "#table-order-list",
+    addMemberBtn : "#add-member-button",
+    addMember: "#add-member"
   };
 
   return {
@@ -49,6 +55,9 @@ const UICtrl = (function() {
         li.innerHTML = `${name} <a class = "btn btn-secondary btn-sm" id="remove-${name}" href="#">remove</i></a>`;
         document.querySelector(uiSelectors.tableOrderList).insertAdjacentElement('beforeend', li);
       });
+    },
+    getMemberInput: function() {
+      return document.querySelector(UICtrl.getUISelectors().addMember).value;
     },
     getUISelectors: function() {
       return uiSelectors;
@@ -68,6 +77,7 @@ const App = (function() {
 
     document.querySelector(UICtrl.getUISelectors().randomizeBtn).addEventListener("click", randomizeTableOrder);
     document.querySelector(UICtrl.getUISelectors().tableOrderList).addEventListener("click", removeUser);
+    document.querySelector(UICtrl.getUISelectors().addMemberBtn).addEventListener("click", addMember);
 
   }
 
@@ -77,13 +87,19 @@ const App = (function() {
   }
 
   const removeUser = function(e) {
-
     if (e.target.id.includes('remove')) {
       const removeArr = e.target.id.split('-');
       const name = removeArr[1];
       TableOrderCtrl.removeName(name);
       UICtrl.displayTableOrder();
     }
+  }
+
+  const addMember = function(e) {
+    e.preventDefault();
+    const member = UICtrl.getMemberInput();
+    TableOrderCtrl.addMember(member);
+    UICtrl.displayTableOrder();
   }
 
   return {
