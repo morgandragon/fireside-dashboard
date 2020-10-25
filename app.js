@@ -55,6 +55,13 @@ const UICtrl = (function() {
         li.innerHTML = `${name} <a class = "btn btn-secondary btn-sm" id="remove-${name}" href="#">remove</i></a>`;
         document.querySelector(uiSelectors.tableOrderList).insertAdjacentElement('beforeend', li);
       });
+
+      const randomizeBtn = document.querySelector(uiSelectors.randomizeBtn);
+      if (names.length < 2) {
+        randomizeBtn.style.display = 'none';
+      } else {
+        randomizeBtn.style.display = 'block';
+      }
     },
     getMemberInput: function() {
       return document.querySelector(UICtrl.getUISelectors().addMember).value;
