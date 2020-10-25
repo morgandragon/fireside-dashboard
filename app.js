@@ -4,8 +4,6 @@
 
 const TableOrderCtrl = (function() {
 
-  // TODO remove hard coded names
-
   const getNameData = function() {
     if (localStorage.getItem('table-order-names') === null) {
       return [];
@@ -47,6 +45,30 @@ const TableOrderCtrl = (function() {
 
 })();
 
+///////////////////////////////
+// Number Guesser Controller //
+///////////////////////////////
+
+const NumberGuesserCtrl = (function() {
+
+
+  let min;
+  let max;
+
+  console.log(`${min}, ${max}`)
+  
+  
+  return {
+    getMin: function() {
+      return min;
+    },
+    getMax: function() {
+      return max;
+    }
+  }
+
+})();
+
 ////////////////////
 // UI Controller //
 ///////////////////
@@ -57,7 +79,12 @@ const UICtrl = (function() {
     randomizeBtn : "#randomize-button",
     tableOrderList : "#table-order-list",
     addMemberBtn : "#add-member-button",
-    addMember: "#add-member"
+    addMember: "#add-member",
+    minMaxText: "#min-and-max-text",
+    guessSuccess: "#guess-success",
+    guessError: "#guess-error",
+    numberGuesserList: "#number-guess-list",
+    guessBtn: "#guess-btn",
   };
 
   return {
@@ -80,9 +107,46 @@ const UICtrl = (function() {
       } else {
         randomizeBtn.style.display = 'block';
       }
+
+    },
+    displayNumberGuesser: function() {
+
+      if (NumberGuesserCtrl.getMin() === undefined || NumberGuesserCtrl.getMax() === undefined) {
+        document.querySelector(uiSelectors.minMaxText).innerHTML = '';
+      }
+
+      document.querySelector(uiSelectors.guessSuccess).style.display = 'none';
+      document.querySelector(uiSelectors.guessError).style.display = 'none';
+
+      const numberGuesserList = document.querySelector(uiSelectors.numberGuesserList);
+      numberGuesserList.innerHTML = '';
+
+      const names = TableOrderCtrl.getNames();
+
+      names.forEach(function(name) {
+
+        const li = document.createElement("li");
+        li.className = "list-group-item list-group-item-secondary d-flex justify-content-between align-items-center";
+        li.innerHTML = `
+          ${name}
+          <input type="number" class="form-control" id="guess-${name}" placeholder="Guess" style="width:35%">
+        `;
+        numberGuesserList.insertAdjacentElement('beforeend', li);
+
+      });
+
+      const guessBtn = document.querySelector(uiSelectors.guessBtn);
+      if (names.length < 2) {
+        guessBtn.style.display = 'none';
+      } else {
+        guessBtn.style.display = 'block';
+      }
     },
     getMemberInput: function() {
       return document.querySelector(UICtrl.getUISelectors().addMember).value;
+    },
+    getReaderInput: function() {
+      return document.querySelector(UICtrl.getUISelectors().addReader).value;
     },
     getUISelectors: function() {
       return uiSelectors;
@@ -109,6 +173,7 @@ const App = (function() {
   const randomizeTableOrder = function() {
     TableOrderCtrl.randomizeNames();
     UICtrl.displayTableOrder();
+    UICtrl.displayNumberGuesser();
   }
 
   const removeUser = function(e) {
@@ -117,6 +182,7 @@ const App = (function() {
       const name = removeArr[1];
       TableOrderCtrl.removeName(name);
       UICtrl.displayTableOrder();
+      UICtrl.displayNumberGuesser();
     }
   }
 
@@ -125,11 +191,13 @@ const App = (function() {
     const member = UICtrl.getMemberInput();
     TableOrderCtrl.addMember(member);
     UICtrl.displayTableOrder();
+    UICtrl.displayNumberGuesser();
   }
 
   return {
     init: function() {
       UICtrl.displayTableOrder();
+      UICtrl.displayNumberGuesser();
       loadEventListeners();
     }
   }
