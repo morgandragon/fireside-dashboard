@@ -80,10 +80,6 @@ const App = (function() {
 
   const removeUser = function(e) {
 
-    console.log(e.target);
-
-    console.log(e.target.id);
-
     if (e.target.id.includes('remove')) {
       const removeArr = e.target.id.split('-');
       const name = removeArr[1];
