@@ -31,6 +31,43 @@
     </div>
           
     <!-- Number Guesser -->
+    <div class="card bg-dark text-light text-center m-3">
+      <div class="card-body">
+        <h4 class="card-title">Number Guesser</h4>
+
+        <p class="card-text" id="min-and-max-text">Choose a number between blah and blah</p>
+
+        <div class="alert alert-success" id="guess-success">The number was 42! Dorian is the winner!</div>
+        <div class="alert alert-danger" id="guess-error">Please choose a number between blah and blah</div>
+
+
+        <form class="form-inline">
+          <input type="number" class="form-control mr-2" style="width:35%" placeholder="Minimum" id="number-low">
+          <input type="number" class="form-control mr-2" style="width:35%" placeholder="Maximum" id="number-high">
+          <button type="submit" class="btn btn-primary" id="max-min-btn">Select</button>
+        </form>
+  
+        <ul class="list-group m-3" id="number-guess-list">
+          <li class="list-group-item list-group-item-secondary d-flex justify-content-between align-items-center">
+            Dorian
+            <input type="number" class="form-control" id="guess-Dorian" placeholder="Guess" style="width:35%">
+          </li>
+        </ul>
+  
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" id="add-reader" placeholder="add reader">
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-primary" id="add-reader-button">Add Reader</button>
+          </div>
+  
+        </div>
+  
+        <a href="#" class="btn btn-primary btn-block mb-3" id="randomize-guess-btn">Randomize Guessing Order</a>
+        <a href="#" class="btn btn-primary btn-block mb-3" id="randomize-guess-btn">Guess</a>
+        
+      </div>
+
+    </div>
 
 
     <!-- Timer -->
