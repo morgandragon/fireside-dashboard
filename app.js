@@ -52,8 +52,10 @@ const TableOrderCtrl = (function() {
 const NumberGuesserCtrl = (function() {
 
 
-  let min;
-  let max;
+  let min = localStorage.getItem("min");
+  let max = localStorage.getItem("max");
+
+  console.log(min, max);
   
   
   return {
@@ -66,6 +68,8 @@ const NumberGuesserCtrl = (function() {
     setMinAndMax: function(newMin, newMax) {
       min = newMin;
       max = newMax;
+      localStorage.setItem("min", min);
+      localStorage.setItem("max", max);
     }
   }
 
@@ -129,12 +133,16 @@ const UICtrl = (function() {
       const guessBtn = document.querySelector(uiSelectors.guessBtn);
       const minMaxText = document.querySelector(uiSelectors.minMaxText);
 
-      if (NumberGuesserCtrl.getMin() === undefined || NumberGuesserCtrl.getMax() === undefined) {
+      const min = NumberGuesserCtrl.getMin();
+      const max = NumberGuesserCtrl.getMax();
+
+      if (!min || !max) {
         minMaxText.innerHTML = '';
         console.log(guessBtn);
         guessBtn.style.display = 'none';
       } else {
-        minMaxText.innerHTML = `Please select a number between <strong>${NumberGuesserCtrl.getMin()}</strong> and <strong>${NumberGuesserCtrl.getMax()}</strong>`
+        minMaxText.innerHTML = `Please select a number between <strong>${min}</strong> and <strong>${max}</strong>`
+        guessBtn.style.display = 'block';
       }
 
       document.querySelector(uiSelectors.guessSuccess).style.display = 'none';
