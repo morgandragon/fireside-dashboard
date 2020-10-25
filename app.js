@@ -17,12 +17,10 @@ const TableOrderCtrl = (function() {
         [names[i], names[j]] = [names[j], names[i]];
       }
     }, removeName(name) {
-      console.log(`removing ${name}`)
       const index = names.indexOf(name);
       if (index >= 0) {
         names.splice(index, 1);
       }
-      console.log(names);
     }
   }
 
@@ -85,7 +83,6 @@ const App = (function() {
       const name = removeArr[1];
       TableOrderCtrl.removeName(name);
       UICtrl.displayTableOrder();
-      console.log(name);
     }
   }
 
