@@ -54,8 +54,6 @@ const NumberGuesserCtrl = (function() {
 
   let min;
   let max;
-
-  console.log(`${min}, ${max}`)
   
   
   return {
@@ -64,6 +62,10 @@ const NumberGuesserCtrl = (function() {
     },
     getMax: function() {
       return max;
+    },
+    setMinAndMax: function(newMin, newMax) {
+      min = newMin;
+      max = newMax;
     }
   }
 
@@ -85,6 +87,19 @@ const UICtrl = (function() {
     guessError: "#guess-error",
     numberGuesserList: "#number-guess-list",
     guessBtn: "#guess-btn",
+    minMaxBtn: "#max-min-btn",
+    min: "#number-low",
+    max: "#number-high"
+  };
+
+  showGuessError = function(message) {
+    const error = document.querySelector(uiSelectors.guessError);
+    error.innerHTML = message;
+    error.style.display = "block";
+
+    setTimeout(() => {
+      error.style.display = "none";
+    }, 3000);
   };
 
   return {
@@ -111,8 +126,15 @@ const UICtrl = (function() {
     },
     displayNumberGuesser: function() {
 
+      const guessBtn = document.querySelector(uiSelectors.guessBtn);
+      const minMaxText = document.querySelector(uiSelectors.minMaxText);
+
       if (NumberGuesserCtrl.getMin() === undefined || NumberGuesserCtrl.getMax() === undefined) {
-        document.querySelector(uiSelectors.minMaxText).innerHTML = '';
+        minMaxText.innerHTML = '';
+        console.log(guessBtn);
+        guessBtn.style.display = 'none';
+      } else {
+        minMaxText.innerHTML = `Please select a number between <strong>${NumberGuesserCtrl.getMin()}</strong> and <strong>${NumberGuesserCtrl.getMax()}</strong>`
       }
 
       document.querySelector(uiSelectors.guessSuccess).style.display = 'none';
@@ -135,18 +157,25 @@ const UICtrl = (function() {
 
       });
 
-      const guessBtn = document.querySelector(uiSelectors.guessBtn);
       if (names.length < 2) {
         guessBtn.style.display = 'none';
-      } else {
-        guessBtn.style.display = 'block';
       }
     },
     getMemberInput: function() {
       return document.querySelector(UICtrl.getUISelectors().addMember).value;
     },
-    getReaderInput: function() {
-      return document.querySelector(UICtrl.getUISelectors().addReader).value;
+    getMinAndMaxInput: function() {
+      const min = document.querySelector(UICtrl.getUISelectors().min).value;
+      const max = document.querySelector(UICtrl.getUISelectors().max).value;
+
+      if (min === '' || max === '') {
+        showGuessError("Please enter a min and a max");
+      } else {
+        return {
+          min: min,
+          max: max
+        }
+      }
     },
     getUISelectors: function() {
       return uiSelectors;
@@ -167,7 +196,19 @@ const App = (function() {
     document.querySelector(UICtrl.getUISelectors().randomizeBtn).addEventListener("click", randomizeTableOrder);
     document.querySelector(UICtrl.getUISelectors().tableOrderList).addEventListener("click", removeUser);
     document.querySelector(UICtrl.getUISelectors().addMemberBtn).addEventListener("click", addMember);
+    document.querySelector(UICtrl.getUISelectors().minMaxBtn).addEventListener("click", selectMinAndMax);
 
+  }
+
+  const selectMinAndMax = function() {
+    const minAndMax = UICtrl.getMinAndMaxInput();
+
+    if (minAndMax != undefined) {
+      const min = minAndMax.min;
+      const max = minAndMax.max;
+      NumberGuesserCtrl.setMinAndMax(min, max);
+      UICtrl.displayNumberGuesser();
+    }
   }
 
   const randomizeTableOrder = function() {
