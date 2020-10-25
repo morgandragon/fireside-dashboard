@@ -48,7 +48,7 @@ const UICtrl = (function() {
       names.forEach(function(name) {
         const li = document.createElement("li");
         li.className = "list-group-item list-group-item-secondary d-flex justify-content-between align-items-center";
-        li.innerHTML = `${name} <a class = "btn btn-secondary btn-sm" id="remove-${name}" href="#"><i class="edit-item las la-times"></i></a>`;
+        li.innerHTML = `${name} <a class = "btn btn-secondary btn-sm" id="remove-${name}" href="#">remove</i></a>`;
         document.querySelector(uiSelectors.tableOrderList).insertAdjacentElement('beforeend', li);
       });
     },
@@ -69,6 +69,7 @@ const App = (function() {
   const loadEventListeners = function() {
 
     document.querySelector(UICtrl.getUISelectors().randomizeBtn).addEventListener("click", randomizeTableOrder);
+    document.querySelector(UICtrl.getUISelectors().tableOrderList).addEventListener("click", removeUser);
 
   }
 
@@ -77,9 +78,19 @@ const App = (function() {
     UICtrl.displayTableOrder();
   }
 
-  const removeUser = function(name) {
-    TableOrderCtrl.removeName(name);
-    UICtrl.displayTableOrder();
+  const removeUser = function(e) {
+
+    console.log(e.target);
+
+    console.log(e.target.id);
+
+    if (e.target.id.includes('remove')) {
+      const removeArr = e.target.id.split('-');
+      const name = removeArr[1];
+      TableOrderCtrl.removeName(name);
+      UICtrl.displayTableOrder();
+      console.log(name);
+    }
   }
 
   return {
