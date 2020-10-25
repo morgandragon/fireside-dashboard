@@ -70,7 +70,9 @@ const NumberGuesserCtrl = (function() {
     },
     chooseWinner: function(guesses) {
       console.log(min, max);
-      const winningNumber = Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1) ) + min;
+      //  return Math.floor(Math.random() * (max - min + 1) ) + min;
+
+      const winningNumber = Math.floor((Math.random() * (max - min  + 1)) + min);
       console.log(winningNumber);
       let winner;
       guesses.forEach(function(guess) {
