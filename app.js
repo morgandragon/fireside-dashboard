@@ -69,8 +69,13 @@ const NumberGuesserCtrl = (function() {
     setMinAndMax: function(newMin, newMax) {
       min = newMin;
       max = newMax;
-      localStorage.setItem("min", min);
-      localStorage.setItem("max", max);
+      if (min && max) {
+        localStorage.setItem("min", min);
+        localStorage.setItem("max", max);
+      } else {
+        localStorage.removeItem("min");
+        localStorage.removeItem("max");
+      }
     },
     chooseWinner: function(guesses) {
       console.log(min, max);
@@ -113,7 +118,8 @@ const UICtrl = (function() {
     minMaxBtn: "#max-min-btn",
     min: "#number-low",
     max: "#number-high",
-    resetTable: "#reset-table-order"
+    resetTable: "#reset-table-order",
+    resetMinMax: "#reset-min-max"
   };
 
   showGuessError = function(message) {
@@ -170,16 +176,21 @@ const UICtrl = (function() {
 
       const guessBtn = document.querySelector(uiSelectors.guessBtn);
       const minMaxText = document.querySelector(uiSelectors.minMaxText);
+      const resetBtn = document.querySelector(uiSelectors.resetMinMax);
 
       const min = NumberGuesserCtrl.getMin();
       const max = NumberGuesserCtrl.getMax();
 
+      console.log(!min);
+
       if (!min || !max) {
         minMaxText.innerHTML = '';
         guessBtn.style.display = 'none';
+        resetBtn.style.display = 'none';
       } else {
         minMaxText.innerHTML = `Please select a number between <strong>${min}</strong> and <strong>${max}</strong>`
         guessBtn.style.display = 'block';
+        resetBtn.style.display = 'block';
       }
 
       document.querySelector(uiSelectors.guessSuccess).style.display = 'none';
@@ -278,6 +289,8 @@ const App = (function() {
     document.querySelector(UICtrl.getUISelectors().minMaxBtn).addEventListener("click", selectMinAndMax);
     document.querySelector(UICtrl.getUISelectors().guessBtn).addEventListener("click", submitGuesses);
     document.querySelector(UICtrl.getUISelectors().resetTable).addEventListener("click", resetTable);
+    document.querySelector(UICtrl.getUISelectors().resetMinMax).addEventListener("click", resetMinMax);
+
 
   }
 
@@ -328,6 +341,11 @@ const App = (function() {
   const resetTable = function() {
     TableOrderCtrl.resetTable();
     UICtrl.displayTableOrder();
+    UICtrl.displayNumberGuesser();
+  }
+
+  const resetMinMax = function() {
+    NumberGuesserCtrl.setMinAndMax(null, null);
     UICtrl.displayNumberGuesser();
   }
 
