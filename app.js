@@ -29,8 +29,9 @@ const TableOrderCtrl = (function() {
       }
       updateLocalStorage();
     }, 
-    removeName(name) {
-      const index = names.indexOf(name);
+    removeUser(name) {
+      const index = names.findIndex(member => member.name === name);
+      console.log("index: " + index);
       if (index >= 0) {
         names.splice(index, 1);
       }
@@ -38,8 +39,22 @@ const TableOrderCtrl = (function() {
     },
     addMember(name) {
       names = getNameData();
-      names.push(name);
+      names.push({
+        "name": name,
+        "isReading": false});
       updateLocalStorage();
+    },
+    setReadingUser(name) {
+      names = getNameData();
+      const member = names.find(member => member.name === name);
+
+      if(member["isReading"]) {
+        member["isReading"] = false;
+      } else {
+        member["isReading"] = true;
+      }
+      updateLocalStorage();
+      
     },
     resetTable() {
       names = [];
@@ -137,7 +152,18 @@ const UICtrl = (function() {
       names.forEach(function(name) {
         const li = document.createElement("li");
         li.className = "list-group-item list-group-item-secondary d-flex justify-content-between align-items-center";
-        li.innerHTML = `${name} <a class = "btn btn-secondary btn-sm" id="remove-${name}" href="#">remove</i></a>`;
+        
+        let checked = '';
+        if (name["isReading"]) checked = "checked";
+        
+        li.innerHTML = `
+          ${name["name"]} 
+          <div class="form-check">
+            <label class="form-check-label mr-2">
+              <input type="checkbox" ${checked} class="form-check-input" id="reading-${name["name"]}"> Reading this week?
+            </label>
+          </div>
+          <a class = "btn btn-secondary btn-sm" id="remove-${name["name"]}" href="#">remove</i></a>`;
         document.querySelector(uiSelectors.tableOrderList).insertAdjacentElement('beforeend', li);
       });
 
@@ -176,6 +202,7 @@ const UICtrl = (function() {
       const min = NumberGuesserCtrl.getMin();
       const max = NumberGuesserCtrl.getMax();
       const names = TableOrderCtrl.getNames();
+      const readingMembers = names.filter(member => member["isReading"]);
 
       const numberGuesserList = document.querySelector(uiSelectors.numberGuesserList);
       numberGuesserList.innerHTML = '';
@@ -188,16 +215,15 @@ const UICtrl = (function() {
         minMaxText.innerHTML = `Please select a number between <strong>${min}</strong> and <strong>${max}</strong>`
         guessBtn.style.display = 'block';
         resetBtn.style.display = 'block';
-        names.forEach(function(name) {
 
+        readingMembers.forEach(function(name) {
           const li = document.createElement("li");
           li.className = "list-group-item list-group-item-secondary d-flex justify-content-between align-items-center";
           li.innerHTML = `
-            ${name}
-            <input type="number" class="form-control" id="guess-${name}" placeholder="Guess" style="width:35%">
+            ${name["name"]}
+            <input type="number" class="form-control" id="guess-${name["name"]}" placeholder="Guess" style="width:35%">
           `;
           numberGuesserList.insertAdjacentElement('beforeend', li);
-  
         });
       }
 
@@ -207,7 +233,7 @@ const UICtrl = (function() {
       document.querySelector(UICtrl.getUISelectors().min).value = '';
       document.querySelector(UICtrl.getUISelectors().max).value = '';
 
-      if (names.length < 2) {
+      if (readingMembers.length < 2) {
         guessBtn.style.display = 'none';
       }
     },
@@ -232,14 +258,14 @@ const UICtrl = (function() {
       let errors;
 
       TableOrderCtrl.getNames().forEach(function(name) {
-        const guessElement = document.querySelector(`#guess-${name}`);
+        const guessElement = document.querySelector(`#guess-${name["name"]}`);
 
         if (guessElement != null) {
           const guessText = guessElement.value;
           const guess = parseInt(guessText);
           if (!isNaN(guess)) {
             if (guess > NumberGuesserCtrl.getMax() || guess < NumberGuesserCtrl.getMin()) {
-              let message = `<p>${name}'s guess of ${guess} is out of range</p>`;
+              let message = `<p>${name["name"]}'s guess of ${guess} is out of range</p>`;
               if (errors) {
                 errors += message;
               } else {
@@ -248,7 +274,7 @@ const UICtrl = (function() {
             } 
             
             if(!errors) {
-              guesses.push({"name": name, "guess": guess})
+              guesses.push({"name": name["name"], "guess": guess})
             }
 
           }       
@@ -278,7 +304,7 @@ const App = (function() {
   const loadEventListeners = function() {
 
     document.querySelector(UICtrl.getUISelectors().randomizeBtn).addEventListener("click", randomizeTableOrder);
-    document.querySelector(UICtrl.getUISelectors().tableOrderList).addEventListener("click", removeUser);
+    document.querySelector(UICtrl.getUISelectors().tableOrderList).addEventListener("click", handleTableOrderListClick);
     document.querySelector(UICtrl.getUISelectors().addMemberBtn).addEventListener("click", addMember);
     document.querySelector(UICtrl.getUISelectors().minMaxBtn).addEventListener("click", selectMinAndMax);
     document.querySelector(UICtrl.getUISelectors().guessBtn).addEventListener("click", submitGuesses);
@@ -305,14 +331,29 @@ const App = (function() {
     UICtrl.displayNumberGuesser();
   }
 
-  const removeUser = function(e) {
-    if (e.target.id.includes('remove')) {
-      const removeArr = e.target.id.split('-');
-      const name = removeArr[1];
-      TableOrderCtrl.removeName(name);
+  const handleTableOrderListClick = function(e) {
+    if (e.target.id.includes('-')) {
+      const nameArr = e.target.id.split('-');
+
+      if (nameArr.length > 1) {
+        const name = nameArr[1];
+
+        if (e.target.id.includes('remove')) {
+          TableOrderCtrl.removeUser(name);
+        } else if (e.target.id.includes('reading')) {
+          TableOrderCtrl.setReadingUser(name);
+        }
+      }
+
       UICtrl.displayTableOrder();
       UICtrl.displayNumberGuesser();
+
     }
+  }
+
+  const removeUser = function(e) {
+      TableOrderCtrl.removeName(name);
+
   }
 
   const addMember = function(e) {
