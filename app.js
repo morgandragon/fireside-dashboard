@@ -357,11 +357,11 @@ const App = (function() {
   }
 
   const addMember = function(e) {
-    e.preventDefault();
     const member = UICtrl.getMemberInput();
     TableOrderCtrl.addMember(member);
     UICtrl.displayTableOrder();
     UICtrl.displayNumberGuesser();
+    e.preventDefault();
   }
 
   const submitGuesses = function() {
