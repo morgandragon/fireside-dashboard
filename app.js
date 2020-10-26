@@ -144,9 +144,14 @@ const UICtrl = (function() {
 
     },
     displayWinner: function(winner) {
-      const message = `<p>The winning number was ${winner.winningNumber}! ${winner.winner.name} is the winner with a guess of ${winner.winner.guess}</p>`;
+      const message = `<p>The winning number was <strong>${winner.winningNumber}</strong>! <strong>${winner.winner.name}</strong> is the winner with a guess of <strong>${winner.winner.guess}</strong></p>`;
       const success = document.querySelector(uiSelectors.guessSuccess);
-      success.innerHTML = message;
+      success.innerHTML = `
+        <button type="button" class="close" data-dismiss="alert">
+          <span>×</span>
+        </button>
+        ${message}
+      `;
       success.style.display = "block";
     },
     displayNumberGuesser: function() {
