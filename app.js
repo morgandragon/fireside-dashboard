@@ -78,11 +78,7 @@ const NumberGuesserCtrl = (function() {
       }
     },
     chooseWinner: function(guesses) {
-      console.log(min, max);
-      //  return Math.floor(Math.random() * (max - min + 1) ) + min;
-
       const winningNumber = Math.floor((Math.random() * (max - min  + 1)) + min);
-      console.log(winningNumber);
       let winner;
       guesses.forEach(function(guess) {
         const diff = Math.abs(winningNumber - guess.guess);
@@ -92,7 +88,6 @@ const NumberGuesserCtrl = (function() {
       });
 
       return {"winner": winner, "winningNumber": winningNumber};
-
     }
   }
 
@@ -181,8 +176,6 @@ const UICtrl = (function() {
       const min = NumberGuesserCtrl.getMin();
       const max = NumberGuesserCtrl.getMax();
 
-      console.log(!min);
-
       if (!min || !max) {
         minMaxText.innerHTML = '';
         guessBtn.style.display = 'none';
@@ -195,6 +188,9 @@ const UICtrl = (function() {
 
       document.querySelector(uiSelectors.guessSuccess).style.display = 'none';
       document.querySelector(uiSelectors.guessError).style.display = 'none';
+
+      document.querySelector(UICtrl.getUISelectors().min).value = '';
+      document.querySelector(UICtrl.getUISelectors().max).value = '';
 
       const numberGuesserList = document.querySelector(uiSelectors.numberGuesserList);
       numberGuesserList.innerHTML = '';
