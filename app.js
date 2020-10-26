@@ -40,6 +40,10 @@ const TableOrderCtrl = (function() {
       names = getNameData();
       names.push(name);
       updateLocalStorage();
+    },
+    resetTable() {
+      names = [];
+      updateLocalStorage();
     }
   }
 
@@ -108,7 +112,8 @@ const UICtrl = (function() {
     guessBtn: "#guess-btn",
     minMaxBtn: "#max-min-btn",
     min: "#number-low",
-    max: "#number-high"
+    max: "#number-high",
+    resetTable: "#reset-table-order"
   };
 
   showGuessError = function(message) {
@@ -140,6 +145,13 @@ const UICtrl = (function() {
         randomizeBtn.style.display = 'none';
       } else {
         randomizeBtn.style.display = 'block';
+      }
+
+      const resetBtn = document.querySelector(uiSelectors.resetTable)
+      if (names === undefined || names.length < 1) {
+        resetBtn.style.display = 'none';
+      } else {
+        resetBtn.style.display = 'block';
       }
 
     },
@@ -265,6 +277,7 @@ const App = (function() {
     document.querySelector(UICtrl.getUISelectors().addMemberBtn).addEventListener("click", addMember);
     document.querySelector(UICtrl.getUISelectors().minMaxBtn).addEventListener("click", selectMinAndMax);
     document.querySelector(UICtrl.getUISelectors().guessBtn).addEventListener("click", submitGuesses);
+    document.querySelector(UICtrl.getUISelectors().resetTable).addEventListener("click", resetTable);
 
   }
 
@@ -310,6 +323,12 @@ const App = (function() {
       const winner = NumberGuesserCtrl.chooseWinner(guesses);
       UICtrl.displayWinner(winner);
     }
+  }
+
+  const resetTable = function() {
+    TableOrderCtrl.resetTable();
+    UICtrl.displayTableOrder();
+    UICtrl.displayNumberGuesser();
   }
 
   return {
