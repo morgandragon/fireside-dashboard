@@ -175,6 +175,10 @@ const UICtrl = (function() {
 
       const min = NumberGuesserCtrl.getMin();
       const max = NumberGuesserCtrl.getMax();
+      const names = TableOrderCtrl.getNames();
+
+      const numberGuesserList = document.querySelector(uiSelectors.numberGuesserList);
+      numberGuesserList.innerHTML = '';
 
       if (!min || !max) {
         minMaxText.innerHTML = '';
@@ -184,6 +188,17 @@ const UICtrl = (function() {
         minMaxText.innerHTML = `Please select a number between <strong>${min}</strong> and <strong>${max}</strong>`
         guessBtn.style.display = 'block';
         resetBtn.style.display = 'block';
+        names.forEach(function(name) {
+
+          const li = document.createElement("li");
+          li.className = "list-group-item list-group-item-secondary d-flex justify-content-between align-items-center";
+          li.innerHTML = `
+            ${name}
+            <input type="number" class="form-control" id="guess-${name}" placeholder="Guess" style="width:35%">
+          `;
+          numberGuesserList.insertAdjacentElement('beforeend', li);
+  
+        });
       }
 
       document.querySelector(uiSelectors.guessSuccess).style.display = 'none';
@@ -191,23 +206,6 @@ const UICtrl = (function() {
 
       document.querySelector(UICtrl.getUISelectors().min).value = '';
       document.querySelector(UICtrl.getUISelectors().max).value = '';
-
-      const numberGuesserList = document.querySelector(uiSelectors.numberGuesserList);
-      numberGuesserList.innerHTML = '';
-
-      const names = TableOrderCtrl.getNames();
-
-      names.forEach(function(name) {
-
-        const li = document.createElement("li");
-        li.className = "list-group-item list-group-item-secondary d-flex justify-content-between align-items-center";
-        li.innerHTML = `
-          ${name}
-          <input type="number" class="form-control" id="guess-${name}" placeholder="Guess" style="width:35%">
-        `;
-        numberGuesserList.insertAdjacentElement('beforeend', li);
-
-      });
 
       if (names.length < 2) {
         guessBtn.style.display = 'none';
